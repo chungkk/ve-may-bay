@@ -1,6 +1,7 @@
 import type { RealTimeFlightResult } from '@/lib/serpapi';
 import { formatDuration } from '@/lib/serpapi';
 import { formatPrice, generateAffiliateLink } from '@/lib/affiliate';
+import { getAirlineBaggage } from '@/lib/airports';
 import styles from './RealTimeFlightCard.module.css';
 
 interface Props {
@@ -18,6 +19,10 @@ export default function RealTimeFlightCard({ flight, index = 0 }: Props) {
     : flight.stops === 1
     ? 'badge-warning'
     : 'badge-danger';
+
+  // Extract airline IATA code from flight number (e.g. "EK 48" -> "EK")
+  const airlineCode = flight.flightNumber?.split(/[\s\d]/)[0] || '';
+  const baggage = getAirlineBaggage(airlineCode);
 
   return (
     <div
@@ -101,6 +106,36 @@ export default function RealTimeFlightCard({ flight, index = 0 }: Props) {
               {stopsLabel}
             </span>
           </div>
+
+          {/* Baggage info */}
+          {baggage ? (
+            <div className={styles.baggageInfo}>
+              <span className={styles.baggageTag} title="Hành lý xách tay">
+                🧳 {baggage.carryOn}
+              </span>
+              <span className={baggage.checked === 'Không bao gồm' ? styles.baggageTagFee : styles.baggageTag} title="Hành lý ký gửi">
+                🛄 {baggage.checked}
+              </span>
+              {baggage.note && (
+                <span className={styles.baggageNote} title={baggage.note}>
+                  ℹ️ {baggage.note}
+                </span>
+              )}
+            </div>
+          ) : flight.baggage ? (
+            <div className={styles.baggageInfo}>
+              {flight.baggage.carryOn && (
+                <span className={styles.baggageTag} title="Hành lý xách tay">
+                  🧳 {flight.baggage.carryOn}
+                </span>
+              )}
+              {flight.baggage.checkedBag && (
+                <span className={styles.baggageTag} title="Hành lý ký gửi">
+                  🛄 {flight.baggage.checkedBag}
+                </span>
+              )}
+            </div>
+          ) : null}
 
           {/* Price */}
           <div className={styles.price}>

@@ -1,0 +1,342 @@
+/* ============================================
+   Alerts Dashboard Page
+   ============================================ */
+
+.main {
+  padding-top: calc(var(--header-height) + var(--space-6));
+  min-height: 100vh;
+  padding-bottom: var(--space-10);
+}
+
+/* Page Header */
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.pageTitle {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+}
+
+.pageSubtitle {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  margin-top: var(--space-1);
+}
+
+.createBtn {
+  padding: var(--space-3) var(--space-5);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.createBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+}
+
+/* Form Card */
+.formCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.formTitle {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  margin-bottom: var(--space-4);
+}
+
+.alertForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-4);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.formLabel {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.formInput,
+.formSelect {
+  padding: var(--space-3) var(--space-4);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  outline: none;
+  transition: all 0.2s;
+}
+
+.formInput:focus,
+.formSelect:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.formSelect option {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.submitBtn {
+  align-self: flex-start;
+  padding: var(--space-3) var(--space-6);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.submitBtn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.errorAlert {
+  padding: var(--space-3);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-md);
+  color: #f87171;
+  font-size: var(--text-sm);
+}
+
+/* Alerts List */
+.alertsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.alertCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-4);
+  transition: all 0.2s;
+}
+
+.alertCard:hover {
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.alertInactive {
+  opacity: 0.55;
+}
+
+.alertRoute {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  grid-column: 1 / -1;
+}
+
+.alertCode {
+  font-size: var(--text-lg);
+  font-weight: 800;
+  color: var(--color-primary-light);
+}
+
+.alertArrow {
+  font-size: var(--text-sm);
+}
+
+.alertCity {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin-left: var(--space-2);
+}
+
+.alertDetails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.alertPrice {
+  display: flex;
+  flex-direction: column;
+}
+
+.alertPriceLabel {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.alertPriceValue {
+  font-size: var(--text-xl);
+  font-weight: 800;
+  color: var(--color-success);
+}
+
+.alertLastPrice {
+  display: flex;
+  flex-direction: column;
+}
+
+.alertDates {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+.alertMeta {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.alertStatus {
+  font-size: var(--text-xs);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.statusActive {
+  background: rgba(34, 197, 94, 0.1);
+  color: #4ade80;
+}
+
+.statusPaused {
+  background: rgba(156, 163, 175, 0.1);
+  color: #9ca3af;
+}
+
+.alertNotifyCount {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.alertActions {
+  display: flex;
+  gap: var(--space-2);
+  align-self: center;
+}
+
+.toggleBtn,
+.deleteBtn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 16px;
+}
+
+.toggleBtn:hover {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: var(--color-primary);
+}
+
+.deleteBtn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+}
+
+/* Empty & Loading States */
+.loadingState,
+.emptyState {
+  text-align: center;
+  padding: var(--space-10) var(--space-4);
+}
+
+.spinner {
+  font-size: 48px;
+  animation: pulse 1.5s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+.emptyIcon {
+  font-size: 64px;
+  margin-bottom: var(--space-4);
+}
+
+.emptyTitle {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+}
+
+.emptyDesc {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-6);
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 640px) {
+  .alertCard {
+    grid-template-columns: 1fr;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .pageHeader {
+    flex-direction: column;
+  }
+}

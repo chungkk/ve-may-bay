@@ -206,6 +206,38 @@
   color: var(--color-text-muted);
 }
 
+/* Baggage */
+.baggageInfo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: var(--space-1);
+}
+
+.baggageTag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--color-primary-light, #a5b4fc);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.baggageTagFee {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: rgba(245, 158, 11, 0.1);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.baggageNote {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
 .carbon {
   font-size: 10px;
   color: var(--color-text-muted);

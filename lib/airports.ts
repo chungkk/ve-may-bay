@@ -56,6 +56,11 @@ export const ALL_AIRPORTS: Airport[] = [
   ...EUROPE_AIRPORTS,
 ];
 
+// Quick lookup map by IATA code
+export const AIRPORTS_MAP: Record<string, Airport> = Object.fromEntries(
+  ALL_AIRPORTS.map((a) => [a.code, a])
+);
+
 // Popular routes (pre-defined)
 export interface PopularRoute {
   origin: string;
@@ -81,6 +86,45 @@ export interface AirlineInfo {
   code: string;
   name: string;
   logo_url: string;
+}
+
+// Baggage allowance reference (Economy class, long-haul)
+export interface AirlineBaggage {
+  carryOn: string;   // e.g. "1x 7kg"
+  checked: string;   // e.g. "1x 23kg" or "Không bao gồm"
+  note?: string;     // Additional notes
+}
+
+export const AIRLINE_BAGGAGE: Record<string, AirlineBaggage> = {
+  'VN': { carryOn: '1x 12kg', checked: '1x 23kg', note: 'Vietnam Airlines Economy' },
+  'VJ': { carryOn: '1x 7kg', checked: 'Không bao gồm', note: 'VietJet — mua thêm từ ~€15' },
+  'QH': { carryOn: '1x 7kg', checked: '1x 20kg', note: 'Bamboo Airways Economy' },
+  'LH': { carryOn: '1x 8kg', checked: '1x 23kg', note: 'Lufthansa Economy' },
+  'TK': { carryOn: '1x 8kg', checked: '2x 23kg', note: 'Turkish Airlines Economy' },
+  'QR': { carryOn: '1x 7kg', checked: '2x 23kg', note: 'Qatar Airways Economy' },
+  'EK': { carryOn: '1x 7kg', checked: '1x 30kg', note: 'Emirates Economy' },
+  'SQ': { carryOn: '1x 7kg', checked: '1x 25kg', note: 'Singapore Airlines Economy' },
+  'CX': { carryOn: '1x 7kg', checked: '1x 23kg', note: 'Cathay Pacific Economy' },
+  'KE': { carryOn: '1x 10kg', checked: '1x 23kg', note: 'Korean Air Economy' },
+  'BR': { carryOn: '1x 7kg', checked: '1x 23kg', note: 'EVA Air Economy' },
+  'CI': { carryOn: '1x 7kg', checked: '1x 23kg', note: 'China Airlines Economy' },
+  'EY': { carryOn: '1x 7kg', checked: '2x 23kg', note: 'Etihad Airways Economy' },
+  'OZ': { carryOn: '1x 10kg', checked: '1x 23kg', note: 'Asiana Airlines Economy' },
+  'AY': { carryOn: '1x 8kg', checked: '1x 23kg', note: 'Finnair Economy' },
+  'AF': { carryOn: '1x 12kg', checked: '1x 23kg', note: 'Air France Economy' },
+  'KL': { carryOn: '1x 12kg', checked: '1x 23kg', note: 'KLM Economy' },
+  'BA': { carryOn: '1x 23kg', checked: '1x 23kg', note: 'British Airways Economy' },
+  'CZ': { carryOn: '1x 5kg', checked: '1x 23kg', note: 'China Southern Economy' },
+  'MU': { carryOn: '1x 5kg', checked: '1x 23kg', note: 'China Eastern Economy' },
+  'CA': { carryOn: '1x 5kg', checked: '1x 23kg', note: 'Air China Economy' },
+  'NH': { carryOn: '1x 10kg', checked: '2x 23kg', note: 'ANA Economy' },
+  'JL': { carryOn: '1x 10kg', checked: '2x 23kg', note: 'Japan Airlines Economy' },
+  'TG': { carryOn: '1x 7kg', checked: '1x 25kg', note: 'THAI Economy' },
+  'SU': { carryOn: '1x 10kg', checked: '1x 23kg', note: 'Aeroflot Economy' },
+};
+
+export function getAirlineBaggage(airlineCode: string): AirlineBaggage | undefined {
+  return AIRLINE_BAGGAGE[airlineCode];
 }
 
 export const AIRLINES: Record<string, AirlineInfo> = {

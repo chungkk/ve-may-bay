@@ -75,6 +75,7 @@ export interface SerpApiFlightLeg {
   travel_class: string;
   extensions?: string[];
   overnight?: boolean;
+  legroom?: string;
 }
 
 export interface SerpApiLayover {
@@ -91,6 +92,7 @@ export interface SerpApiFlight {
   price: number;
   type?: string;
   airline_logo?: string;
+  extensions?: string[];
   carbon_emissions?: {
     this_flight: number;
     typical_for_this_route: number;
@@ -153,6 +155,12 @@ export interface RealTimeFlightResult {
   departDate: string;
   returnDate?: string;
   carbonEmissions?: number;
+  baggage?: {
+    carryOn?: string;      // e.g. "1x xách tay"
+    checkedBag?: string;   // e.g. "1x 23kg" or "Không bao gồm"
+    checkedBagFee?: string; // e.g. "€40"
+  };
+  extensions?: string[];
 }
 
 interface SerpApiParsedResult {
@@ -300,6 +308,13 @@ function normalizeFlight(
     duration: l.duration,
   }));
 
+  // Parse baggage info from extensions
+  const allExtensions = [
+    ...(flight.extensions || []),
+    ...(firstLeg.extensions || []),
+  ];
+  const baggage = parseBaggageInfo(allExtensions);
+
   return {
     id: `gf-${index}-${firstLeg.departure_airport.id}-${lastLeg.arrival_airport.id}-${flight.price}`,
     origin: firstLeg.departure_airport.id,
@@ -322,7 +337,60 @@ function normalizeFlight(
     departDate,
     returnDate,
     carbonEmissions: flight.carbon_emissions?.this_flight,
+    baggage,
+    extensions: allExtensions.length > 0 ? allExtensions : undefined,
   };
+}
+
+// ---- Baggage Parser ----
+function parseBaggageInfo(extensions: string[]): RealTimeFlightResult['baggage'] {
+  if (!extensions || extensions.length === 0) return undefined;
+
+  let carryOn: string | undefined;
+  let checkedBag: string | undefined;
+  let checkedBagFee: string | undefined;
+
+  for (const ext of extensions) {
+    const lower = ext.toLowerCase();
+
+    // Carry-on detection
+    if (lower.includes('carry-on') || lower.includes('carry on') || lower.includes('cabin bag') || lower.includes('xách tay') || lower.includes('personal item')) {
+      if (lower.includes('no carry-on') || lower.includes('not included')) {
+        carryOn = 'Không bao gồm';
+      } else {
+        carryOn = ext.replace(/included/i, '').trim() || 'Có';
+      }
+    }
+
+    // Checked bag detection
+    if (lower.includes('checked bag') || lower.includes('baggage') || lower.includes('ký gửi')) {
+      if (lower.includes('no checked') || lower.includes('not included')) {
+        checkedBag = 'Không bao gồm';
+      } else {
+        // Try to extract weight: "1x50lb", "23kg", "1 checked bag"
+        const weightMatch = ext.match(/(\d+)\s*(kg|lb)/i);
+        const countMatch = ext.match(/(\d+)\s*(x|×)/i);
+        if (weightMatch) {
+          const weight = weightMatch[1];
+          const unit = weightMatch[2].toLowerCase();
+          const count = countMatch ? countMatch[1] : '1';
+          checkedBag = `${count}x ${weight}${unit}`;
+        } else {
+          checkedBag = ext.replace(/included/i, '').trim() || 'Có';
+        }
+      }
+    }
+
+    // Fee detection
+    const feeMatch = ext.match(/(\$|€|£|USD|EUR)\s*(\d+)/i) || ext.match(/(\d+)\s*(\$|€|£|USD|EUR)/i);
+    if (feeMatch && (lower.includes('bag') || lower.includes('checked'))) {
+      checkedBagFee = ext;
+    }
+  }
+
+  if (!carryOn && !checkedBag && !checkedBagFee) return undefined;
+
+  return { carryOn, checkedBag, checkedBagFee };
 }
 
 // ---- Helpers ----
