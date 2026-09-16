@@ -1,0 +1,191 @@
+.card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition: all var(--transition-base);
+  position: relative;
+  opacity: 0;
+}
+
+.card:hover {
+  border-color: var(--color-border-hover);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.cheapestBadge {
+  background: var(--color-accent-gradient);
+  color: white;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  padding: var(--space-1) var(--space-4);
+  text-align: center;
+  letter-spacing: 0.03em;
+}
+
+.cardContent {
+  display: grid;
+  grid-template-columns: 200px 1fr 200px;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  align-items: center;
+}
+
+.airline {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.airlineLogo {
+  border-radius: var(--radius-md);
+  background: white;
+  padding: 2px;
+}
+
+.airlineInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.airlineName {
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+}
+
+.flightNumber {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+}
+
+.route {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  justify-content: center;
+}
+
+.routePoint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.routeCode {
+  font-size: var(--text-xl);
+  font-weight: 800;
+  color: var(--color-text-primary);
+  letter-spacing: 0.02em;
+}
+
+.routeDate {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.routeLine {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  position: relative;
+  min-width: 100px;
+}
+
+.routeLineInner {
+  width: 100%;
+  height: 2px;
+  background: var(--color-border-hover);
+  border-radius: 1px;
+  position: relative;
+}
+
+.routeLineInner::before,
+.routeLineInner::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-text-accent);
+}
+
+.routeLineInner::before {
+  left: -3px;
+}
+
+.routeLineInner::after {
+  right: -3px;
+}
+
+.stopsLabel {
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.planeIcon {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 14px;
+  animation: plane-fly 3s ease-in-out infinite;
+}
+
+.priceSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
+}
+
+.priceLabel {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: flex-end;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cardContent {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    padding: var(--space-4);
+  }
+
+  .airline {
+    justify-content: flex-start;
+  }
+
+  .route {
+    justify-content: space-between;
+    padding: var(--space-3) 0;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .priceSection {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .actions {
+    flex-direction: row;
+    align-items: center;
+  }
+}

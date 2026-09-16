@@ -1,0 +1,133 @@
+import type { Translation } from './types';
+
+export const vi: Translation = {
+  nav: {
+    home: 'Trang chủ',
+    search: 'Tìm vé',
+    calendar: 'Lịch giá',
+    alerts: 'Theo dõi giá',
+  },
+  hero: {
+    title: 'Săn Vé Máy Bay Giá Rẻ',
+    subtitle: 'Tìm giá tốt nhất cho chuyến bay Đức ↔ Việt Nam và quốc tế. Nhận thông báo khi giá giảm.',
+    cta: 'Tìm chuyến bay',
+  },
+  search: {
+    from: 'Điểm đi',
+    to: 'Điểm đến',
+    departDate: 'Ngày đi',
+    returnDate: 'Ngày về',
+    searchBtn: 'Tìm vé',
+    searching: 'Đang tìm...',
+    results: 'Kết quả',
+    noResults: 'Không tìm thấy chuyến bay nào cho tuyến này. Hãy thử thay đổi ngày hoặc điểm đến.',
+    cheapest: 'Giá rẻ nhất',
+    direct: 'Bay thẳng',
+    stops: 'điểm dừng',
+    stop: 'điểm dừng',
+    bookNow: 'Đặt vé ngay',
+    setAlert: 'Theo dõi giá',
+    priceFrom: 'Giá từ',
+    perPerson: '/ người',
+    roundTrip: 'Khứ hồi',
+    oneWay: 'Một chiều',
+  },
+  calendar: {
+    title: 'Lịch Giá Vé',
+    subtitle: 'Xem giá rẻ nhất theo từng ngày trong tháng',
+    cheapestDay: 'Ngày rẻ nhất',
+    selectMonth: 'Chọn tháng',
+  },
+  alert: {
+    title: 'Theo Dõi Giá',
+    subtitle: 'Nhận email thông báo khi giá vé giảm xuống mức bạn mong muốn',
+    emailLabel: 'Email của bạn',
+    targetPrice: 'Giá mục tiêu (€)',
+    createBtn: 'Tạo cảnh báo',
+    success: 'Đã tạo cảnh báo thành công! Chúng tôi sẽ gửi email cho bạn khi giá giảm.',
+    manage: 'Quản lý cảnh báo',
+  },
+  common: {
+    loading: 'Đang tải...',
+    error: 'Có lỗi xảy ra',
+    retry: 'Thử lại',
+    currency: 'EUR',
+    or: 'hoặc',
+    and: 'và',
+    back: 'Quay lại',
+    close: 'Đóng',
+    powered: 'Dữ liệu từ',
+  },
+  footer: {
+    disclaimer: 'Giá vé có thể thay đổi. Giá hiển thị là giá tham khảo từ các trang đặt vé.',
+    copyright: '© 2026 Vé Máy Bay. Dành cho cộng đồng người Việt tại Đức.',
+  },
+};
+
+export const de: Translation = {
+  nav: {
+    home: 'Startseite',
+    search: 'Flug suchen',
+    calendar: 'Preiskalender',
+    alerts: 'Preisalarm',
+  },
+  hero: {
+    title: 'Günstige Flüge Finden',
+    subtitle: 'Finden Sie die besten Preise für Flüge Deutschland ↔ Vietnam und international. Benachrichtigungen bei Preissenkungen.',
+    cta: 'Flüge suchen',
+  },
+  search: {
+    from: 'Von',
+    to: 'Nach',
+    departDate: 'Hinflug',
+    returnDate: 'Rückflug',
+    searchBtn: 'Suchen',
+    searching: 'Suche läuft...',
+    results: 'Ergebnisse',
+    noResults: 'Keine Flüge für diese Strecke gefunden. Versuchen Sie andere Daten oder Ziele.',
+    cheapest: 'Günstigster Preis',
+    direct: 'Direktflug',
+    stops: 'Zwischenstopps',
+    stop: 'Zwischenstopp',
+    bookNow: 'Jetzt buchen',
+    setAlert: 'Preisalarm setzen',
+    priceFrom: 'Preis ab',
+    perPerson: '/ Person',
+    roundTrip: 'Hin und zurück',
+    oneWay: 'Nur Hinflug',
+  },
+  calendar: {
+    title: 'Preiskalender',
+    subtitle: 'Die günstigsten Preise für jeden Tag des Monats',
+    cheapestDay: 'Günstigster Tag',
+    selectMonth: 'Monat wählen',
+  },
+  alert: {
+    title: 'Preisalarm',
+    subtitle: 'Erhalten Sie eine E-Mail-Benachrichtigung, wenn der Flugpreis auf Ihren Wunschpreis sinkt',
+    emailLabel: 'Ihre E-Mail',
+    targetPrice: 'Zielpreis (€)',
+    createBtn: 'Alarm erstellen',
+    success: 'Preisalarm erfolgreich erstellt! Wir benachrichtigen Sie per E-Mail bei Preissenkungen.',
+    manage: 'Alarme verwalten',
+  },
+  common: {
+    loading: 'Laden...',
+    error: 'Ein Fehler ist aufgetreten',
+    retry: 'Erneut versuchen',
+    currency: 'EUR',
+    or: 'oder',
+    and: 'und',
+    back: 'Zurück',
+    close: 'Schließen',
+    powered: 'Daten von',
+  },
+  footer: {
+    disclaimer: 'Preise können sich ändern. Angezeigte Preise sind Referenzpreise von Buchungsseiten.',
+    copyright: '© 2026 Vé Máy Bay. Für die vietnamesische Gemeinschaft in Deutschland.',
+  },
+};
+
+export function getTranslation(locale: 'vi' | 'de'): Translation {
+  return locale === 'de' ? de : vi;
+}

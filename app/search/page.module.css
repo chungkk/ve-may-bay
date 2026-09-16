@@ -1,0 +1,156 @@
+.main {
+  min-height: 100vh;
+}
+
+.searchSection {
+  padding: var(--space-6) 0;
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.searchCard {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+}
+
+.routeHeader {
+  padding: var(--space-10) 0;
+  text-align: center;
+}
+
+.routeInfo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+}
+
+.routeEndpoint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.routeFlag {
+  font-size: var(--text-3xl);
+}
+
+.routeCode {
+  font-size: var(--text-4xl);
+  font-weight: 900;
+  letter-spacing: 0.03em;
+}
+
+.routeCity {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.routeArrowBig {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-2xl);
+  animation: plane-fly 3s ease-in-out infinite;
+}
+
+.routeDash {
+  width: 40px;
+  height: 2px;
+  background: var(--color-border-hover);
+  border-radius: 1px;
+}
+
+.resultsSection {
+  padding: 0 0 var(--space-16);
+}
+
+.resultsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+}
+
+.resultsHeader h2 {
+  font-size: var(--text-xl);
+  font-weight: 700;
+}
+
+.sortLabel {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.resultsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* States */
+.loadingState,
+.errorState,
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-16) 0;
+  text-align: center;
+}
+
+.loadingSpinner {
+  font-size: 48px;
+  animation: float 1.5s ease-in-out infinite;
+}
+
+.errorIcon,
+.emptyIcon {
+  font-size: 48px;
+}
+
+.errorMessage,
+.emptyMessage {
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+.errorHint,
+.emptyHint {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  max-width: 500px;
+}
+
+.errorHint code {
+  background: var(--color-bg-card);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  color: var(--color-text-accent);
+}
+
+@media (max-width: 768px) {
+  .routeInfo {
+    gap: var(--space-4);
+  }
+
+  .routeCode {
+    font-size: var(--text-2xl);
+  }
+
+  .routeDash {
+    width: 20px;
+  }
+
+  .resultsHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+}
