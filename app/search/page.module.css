@@ -68,6 +68,20 @@
   padding: 0 0 var(--space-16);
 }
 
+.priceInsights {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
 .resultsHeader {
   display: flex;
   align-items: center;

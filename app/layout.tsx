@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({
@@ -35,16 +34,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="vi" className={inter.variable}>
-      <body>
-        {children}
-        {/* Travelpayouts Drive Tracking Widget */}
-        <Script
-          id="travelpayouts-drive"
-          strategy="afterInteractive"
-          src="https://emrldtp.cc/NTc0NDQ3.js?t=574447"
-        />
-      </body>
+    <html lang="vi" className={inter.variable} data-scroll-behavior="smooth">
+      <body>{children}</body>
     </html>
   );
 }
+

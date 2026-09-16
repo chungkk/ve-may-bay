@@ -4,15 +4,22 @@ import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import SearchForm from '@/components/SearchForm';
-import FlightCard from '@/components/FlightCard';
-import { getAirport, COUNTRY_FLAGS } from '@/lib/airports';
-import type { FlightResult } from '@/lib/types';
+import RealTimeFlightCard from '@/components/RealTimeFlightCard';
+import { getAirport, COUNTRY_FLAGS, COUNTRY_GROUPS } from '@/lib/airports';
+import { formatPrice } from '@/lib/affiliate';
+import type { RealTimeFlightResult } from '@/lib/serpapi';
 import styles from './page.module.css';
 
 function SearchResults() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [results, setResults] = useState<FlightResult[]>([]);
+  const [bestFlights, setBestFlights] = useState<RealTimeFlightResult[]>([]);
+  const [otherFlights, setOtherFlights] = useState<RealTimeFlightResult[]>([]);
+  const [priceInsights, setPriceInsights] = useState<{
+    lowestPrice: number;
+    priceLevel: string;
+    typicalRange: [number, number];
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,23 +28,47 @@ function SearchResults() {
   const departDate = searchParams.get('depart_date') || '';
   const returnDate = searchParams.get('return_date') || '';
 
-  const originAirport = getAirport(origin);
-  const destAirport = getAirport(destination);
+  const getEndpointDisplay = (code: string) => {
+    const group = COUNTRY_GROUPS[code];
+    if (group) {
+      return { flag: group.flag, code: group.flag, city: group.label_vi };
+    }
+    const airport = getAirport(code);
+    if (airport) {
+      return {
+        flag: COUNTRY_FLAGS[airport.country_code] || '',
+        code: code,
+        city: airport.city_vi,
+      };
+    }
+    return { flag: '', code: code, city: code };
+  };
+
+  const originDisplay = getEndpointDisplay(origin);
+  const destDisplay = getEndpointDisplay(destination);
 
   const fetchResults = useCallback(async () => {
+    if (!departDate) return;
+
     setIsLoading(true);
     setError(null);
 
     try {
-      const params = new URLSearchParams({ origin, destination, currency: 'EUR' });
-      if (departDate) params.set('depart_date', departDate);
+      const params = new URLSearchParams({
+        origin,
+        destination,
+        depart_date: departDate,
+        currency: 'EUR',
+      });
       if (returnDate) params.set('return_date', returnDate);
 
-      const res = await fetch(`/api/flights/search?${params.toString()}`);
+      const res = await fetch(`/api/flights/realtime?${params.toString()}`);
       const data = await res.json();
 
       if (data.success) {
-        setResults(data.data);
+        setBestFlights(data.data.bestFlights);
+        setOtherFlights(data.data.otherFlights);
+        setPriceInsights(data.priceInsights || null);
       } else {
         setError(data.error || 'Không thể tìm chuyến bay');
       }
@@ -62,7 +93,7 @@ function SearchResults() {
     router.push(`/search?${params.toString()}`);
   };
 
-  const cheapestPrice = results.length > 0 ? Math.min(...results.map(r => r.price)) : undefined;
+  const totalResults = bestFlights.length + otherFlights.length;
 
   return (
     <>
@@ -83,11 +114,11 @@ function SearchResults() {
             <div className={styles.routeInfo}>
               <div className={styles.routeEndpoint}>
                 <span className={styles.routeFlag}>
-                  {originAirport ? COUNTRY_FLAGS[originAirport.country_code] : ''}
+                  {originDisplay.flag}
                 </span>
-                <span className={styles.routeCode}>{origin}</span>
+                <span className={styles.routeCode}>{originDisplay.code}</span>
                 <span className={styles.routeCity}>
-                  {originAirport?.city_vi || origin}
+                  {originDisplay.city}
                 </span>
               </div>
               <div className={styles.routeArrowBig}>
@@ -97,16 +128,38 @@ function SearchResults() {
               </div>
               <div className={styles.routeEndpoint}>
                 <span className={styles.routeFlag}>
-                  {destAirport ? COUNTRY_FLAGS[destAirport.country_code] : ''}
+                  {destDisplay.flag}
                 </span>
-                <span className={styles.routeCode}>{destination}</span>
+                <span className={styles.routeCode}>{destDisplay.code}</span>
                 <span className={styles.routeCity}>
-                  {destAirport?.city_vi || destination}
+                  {destDisplay.city}
                 </span>
               </div>
             </div>
+
+            {/* Source badge */}
+            <div style={{ textAlign: 'center', marginTop: 'var(--space-2)' }}>
+              <span className="badge badge-success" style={{ fontSize: '10px' }}>
+                🔴 LIVE — Dữ liệu thời gian thực từ Google Flights
+              </span>
+            </div>
           </div>
         </section>
+
+        {/* Price Insights */}
+        {priceInsights && !isLoading && (
+          <section style={{ padding: '0 0 var(--space-4)' }}>
+            <div className="container">
+              <div className={styles.priceInsights}>
+                <span>💡 Giá thấp nhất: <strong>{formatPrice(priceInsights.lowestPrice)}</strong></span>
+                <span>📊 Mức giá: <strong>{priceInsights.priceLevel === 'low' ? '🟢 Rẻ' : priceInsights.priceLevel === 'typical' ? '🟡 Trung bình' : '🔴 Cao'}</strong></span>
+                {priceInsights.typicalRange && (
+                  <span>📈 Giá thường: <strong>{formatPrice(priceInsights.typicalRange[0])} — {formatPrice(priceInsights.typicalRange[1])}</strong></span>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Results */}
         <section className={styles.resultsSection}>
@@ -114,7 +167,10 @@ function SearchResults() {
             {isLoading && (
               <div className={styles.loadingState}>
                 <div className={styles.loadingSpinner}>✈️</div>
-                <p>Đang tìm giá tốt nhất cho bạn...</p>
+                <p>Đang tìm chuyến bay real-time...</p>
+                <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>
+                  Đang kết nối Google Flights...
+                </p>
               </div>
             )}
 
@@ -123,8 +179,7 @@ function SearchResults() {
                 <p className={styles.errorIcon}>😞</p>
                 <p className={styles.errorMessage}>{error}</p>
                 <p className={styles.errorHint}>
-                  Hãy thử thay đổi ngày bay hoặc điểm đến. Nếu bạn chưa cấu hình API token,
-                  hãy thêm <code>TRAVELPAYOUTS_API_TOKEN</code> vào file <code>.env.local</code>
+                  Hãy thử thay đổi ngày bay hoặc điểm đến.
                 </p>
                 <button className="btn btn-primary" onClick={fetchResults}>
                   🔄 Thử lại
@@ -132,7 +187,7 @@ function SearchResults() {
               </div>
             )}
 
-            {!isLoading && !error && results.length === 0 && (
+            {!isLoading && !error && totalResults === 0 && departDate && (
               <div className={styles.emptyState}>
                 <p className={styles.emptyIcon}>🔍</p>
                 <p className={styles.emptyMessage}>
@@ -144,23 +199,51 @@ function SearchResults() {
               </div>
             )}
 
-            {!isLoading && results.length > 0 && (
+            {!isLoading && !error && !departDate && (
+              <div className={styles.emptyState}>
+                <p className={styles.emptyIcon}>📅</p>
+                <p className={styles.emptyMessage}>
+                  Chọn ngày đi để bắt đầu tìm kiếm.
+                </p>
+              </div>
+            )}
+
+            {/* Best flights */}
+            {!isLoading && bestFlights.length > 0 && (
               <>
                 <div className={styles.resultsHeader}>
                   <h2>
-                    Tìm thấy <span className="text-gradient">{results.length}</span> chuyến bay
+                    ⭐ Chuyến bay <span className="text-gradient">tốt nhất</span>
+                  </h2>
+                </div>
+                <div className={styles.resultsList}>
+                  {bestFlights.map((flight, index) => (
+                    <RealTimeFlightCard
+                      key={flight.id}
+                      flight={flight}
+                      index={index}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* Other flights */}
+            {!isLoading && otherFlights.length > 0 && (
+              <>
+                <div className={styles.resultsHeader} style={{ marginTop: 'var(--space-8)' }}>
+                  <h2>
+                    Tìm thấy <span className="text-gradient">{otherFlights.length}</span> chuyến bay khác
                   </h2>
                   <span className={styles.sortLabel}>
                     Sắp xếp: Giá thấp nhất
                   </span>
                 </div>
-
                 <div className={styles.resultsList}>
-                  {results.map((flight, index) => (
-                    <FlightCard
+                  {otherFlights.map((flight, index) => (
+                    <RealTimeFlightCard
                       key={flight.id}
                       flight={flight}
-                      cheapestPrice={cheapestPrice}
                       index={index}
                     />
                   ))}
@@ -177,12 +260,12 @@ function SearchResults() {
 export default function SearchPage() {
   return (
     <Suspense fallback={
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        minHeight: '100vh', 
-        color: 'var(--color-text-secondary)' 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        color: 'var(--color-text-secondary)'
       }}>
         ✈️ Đang tải...
       </div>

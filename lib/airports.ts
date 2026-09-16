@@ -126,3 +126,30 @@ export const COUNTRY_FLAGS: Record<string, string> = {
   'TR': '🇹🇷',
   'ES': '🇪🇸',
 };
+
+// Country group codes for "search all airports in a country"
+export const COUNTRY_GROUPS: Record<string, { label_vi: string; flag: string; airports: Airport[] }> = {
+  'ALL_DE': { label_vi: 'Tất cả sân bay Đức', flag: '🇩🇪', airports: GERMAN_AIRPORTS },
+  'ALL_VN': { label_vi: 'Tất cả sân bay Việt Nam', flag: '🇻🇳', airports: VIETNAM_AIRPORTS },
+};
+
+/**
+ * Resolve a code (airport or country group) to an array of IATA codes.
+ * - "ALL_DE" → ["FRA","MUC","BER",...] 
+ * - "ALL_VN" → ["SGN","HAN","DAD",...]
+ * - "FRA"    → ["FRA"]
+ */
+export function resolveAirportCodes(code: string): string[] {
+  const group = COUNTRY_GROUPS[code];
+  if (group) {
+    return group.airports.map(a => a.code);
+  }
+  return [code];
+}
+
+/**
+ * Check if a code is a country group
+ */
+export function isCountryGroup(code: string): boolean {
+  return code in COUNTRY_GROUPS;
+}

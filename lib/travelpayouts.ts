@@ -47,7 +47,8 @@ export async function fetchCheapTickets(options: FetchOptions): Promise<FlightRe
   });
 
   if (!response.ok) {
-    throw new Error(`Travelpayouts API error: ${response.status}`);
+    console.error(`Travelpayouts API error: ${response.status} for ${origin} → ${destination}`);
+    return [];
   }
 
   const data: TravelpayoutsCheapResponse = await response.json();
@@ -119,7 +120,8 @@ export async function fetchMonthMatrix(options: FetchOptions): Promise<PriceCale
   });
 
   if (!response.ok) {
-    throw new Error(`Travelpayouts API error: ${response.status}`);
+    console.error(`Travelpayouts calendar API error: ${response.status} for ${origin} → ${destination}`);
+    return [];
   }
 
   const data: TravelpayoutsMonthMatrixResponse = await response.json();

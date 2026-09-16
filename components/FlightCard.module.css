@@ -83,6 +83,12 @@
   letter-spacing: 0.02em;
 }
 
+.routeCity {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
 .routeDate {
   font-size: var(--text-xs);
   color: var(--color-text-muted);

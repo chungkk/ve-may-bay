@@ -3,9 +3,9 @@
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Header from '@/components/Header';
-import { getAirport, COUNTRY_FLAGS, GERMAN_AIRPORTS, VIETNAM_AIRPORTS, ALL_AIRPORTS } from '@/lib/airports';
-import { formatPrice, generateAffiliateLink } from '@/lib/affiliate';
-import type { PriceCalendarDay } from '@/lib/types';
+import { getAirport, getAirlineLogo, getAirlineName, COUNTRY_FLAGS, GERMAN_AIRPORTS, VIETNAM_AIRPORTS, ALL_AIRPORTS } from '@/lib/airports';
+import { formatPrice, formatDate, getStopsLabel, generateAffiliateLink } from '@/lib/affiliate';
+import type { PriceCalendarDay, FlightResult } from '@/lib/types';
 import styles from './page.module.css';
 
 function CalendarContent() {
@@ -21,6 +21,11 @@ function CalendarContent() {
   const [calendarData, setCalendarData] = useState<PriceCalendarDay[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Day detail popup state
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [dayFlights, setDayFlights] = useState<FlightResult[]>([]);
+  const [isDayLoading, setIsDayLoading] = useState(false);
 
   const fetchCalendar = useCallback(async () => {
     setIsLoading(true);
@@ -53,6 +58,38 @@ function CalendarContent() {
   useEffect(() => {
     fetchCalendar();
   }, [fetchCalendar]);
+
+  // Fetch flight details for a specific day
+  const fetchDayFlights = async (dateStr: string) => {
+    setSelectedDay(dateStr);
+    setIsDayLoading(true);
+    setDayFlights([]);
+
+    try {
+      const params = new URLSearchParams({
+        origin,
+        destination,
+        depart_date: dateStr,
+        currency: 'EUR',
+      });
+
+      const res = await fetch(`/api/flights/search?${params.toString()}`);
+      const data = await res.json();
+
+      if (data.success) {
+        setDayFlights(data.data);
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setIsDayLoading(false);
+    }
+  };
+
+  const closeDayPopup = () => {
+    setSelectedDay(null);
+    setDayFlights([]);
+  };
 
   // Calendar rendering logic
   const year = parseInt(currentMonth.split('-')[0]);
@@ -107,7 +144,7 @@ function CalendarContent() {
               📅 Lịch Giá Vé
             </h1>
             <p className={styles.pageSubtitle}>
-              Xem giá rẻ nhất theo từng ngày trong tháng
+              Xem giá rẻ nhất theo từng ngày — bấm vào ngày để xem chi tiết chuyến bay
             </p>
           </div>
 
@@ -236,20 +273,24 @@ function CalendarContent() {
                     className={`${styles.calendarDay} ${hasPrice ? styles.calendarDayHasPrice : ''} ${isCheapest ? styles.calendarDayCheapest : ''}`}
                     onClick={() => {
                       if (hasPrice) {
-                        const url = generateAffiliateLink(origin, destination, dateStr);
-                        window.open(url, '_blank');
+                        fetchDayFlights(dateStr);
                       }
                     }}
                     style={hasPrice ? { cursor: 'pointer' } : undefined}
                   >
                     <span className={styles.dayNumber}>{day}</span>
                     {hasPrice && (
-                      <span
-                        className={styles.dayPrice}
-                        style={{ color: getPriceColor(dayData.price as number) }}
-                      >
-                        {formatPrice(dayData.price as number)}
-                      </span>
+                      <>
+                        <span
+                          className={styles.dayPrice}
+                          style={{ color: getPriceColor(dayData.price as number) }}
+                        >
+                          {formatPrice(dayData.price as number)}
+                        </span>
+                        <span className={styles.dayStops}>
+                          {dayData.stops === 0 ? '✈ thẳng' : `${dayData.stops} dừng`}
+                        </span>
+                      </>
                     )}
                     {isCheapest && (
                       <span className={styles.cheapestLabel}>🏷️</span>
@@ -271,6 +312,92 @@ function CalendarContent() {
             </div>
           )}
         </div>
+
+        {/* Day Detail Popup */}
+        {selectedDay && (
+          <div className={styles.popupOverlay} onClick={closeDayPopup}>
+            <div className={styles.popupContent} onClick={(e) => e.stopPropagation()}>
+              <div className={styles.popupHeader}>
+                <h3 className={styles.popupTitle}>
+                  ✈️ Chuyến bay ngày {formatDate(selectedDay)}
+                </h3>
+                <span className={styles.popupRoute}>
+                  {originAirport?.city_vi || origin} → {destAirport?.city_vi || destination}
+                </span>
+                <button className={styles.popupClose} onClick={closeDayPopup}>✕</button>
+              </div>
+
+              <div className={styles.popupBody}>
+                {isDayLoading ? (
+                  <div className={styles.popupLoading}>
+                    <span>✈️</span> Đang tìm chuyến bay...
+                  </div>
+                ) : dayFlights.length === 0 ? (
+                  <div className={styles.popupEmpty}>
+                    Không tìm thấy chuyến bay cho ngày này.
+                  </div>
+                ) : (
+                  <div className={styles.popupFlightList}>
+                    {dayFlights.map((flight) => (
+                      <div key={flight.id} className={styles.popupFlight}>
+                        <div className={styles.popupFlightAirline}>
+                          <img
+                            src={getAirlineLogo(flight.airline)}
+                            alt={getAirlineName(flight.airline)}
+                            width={32}
+                            height={32}
+                            className={styles.popupAirlineLogo}
+                          />
+                          <div>
+                            <div className={styles.popupAirlineName}>
+                              {getAirlineName(flight.airline)}
+                            </div>
+                            <div className={styles.popupFlightNumber}>
+                              {flight.airline}{flight.flightNumber}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className={styles.popupFlightRoute}>
+                          <span className={styles.popupRouteCode}>{flight.origin}</span>
+                          <span className={styles.popupRouteArrow}>→</span>
+                          <span className={styles.popupRouteCode}>{flight.destination}</span>
+                          <span className={`badge ${
+                            flight.stops === 0 ? 'badge-success' :
+                            flight.stops === 1 ? 'badge-warning' : 'badge-danger'
+                          }`}>
+                            {getStopsLabel(flight.stops)}
+                          </span>
+                        </div>
+
+                        <div className={styles.popupFlightDates}>
+                          <div>🛫 {formatDate(flight.departureAt)}</div>
+                          {flight.returnAt && (
+                            <div>🛬 {formatDate(flight.returnAt)}</div>
+                          )}
+                        </div>
+
+                        <div className={styles.popupFlightPrice}>
+                          <span className={styles.popupPrice}>
+                            {formatPrice(flight.price, flight.currency)}
+                          </span>
+                          <a
+                            href={flight.affiliateUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-primary btn-sm"
+                          >
+                            Đặt vé →
+                          </a>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </>
   );

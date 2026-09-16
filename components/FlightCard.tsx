@@ -1,4 +1,4 @@
-import { getAirlineLogo, getAirlineName } from '@/lib/airports';
+import { getAirlineLogo, getAirlineName, getAirport } from '@/lib/airports';
 import { formatPrice, formatDate, getStopsLabel, getPriceLevel } from '@/lib/affiliate';
 import type { FlightResult } from '@/lib/types';
 import styles from './FlightCard.module.css';
@@ -48,6 +48,7 @@ export default function FlightCard({ flight, cheapestPrice, index = 0, onSetAler
         <div className={styles.route}>
           <div className={styles.routePoint}>
             <span className={styles.routeCode}>{flight.origin}</span>
+            <span className={styles.routeCity}>{getAirport(flight.origin)?.city_vi || flight.origin}</span>
             <span className={styles.routeDate}>{formatDate(flight.departureAt)}</span>
           </div>
           <div className={styles.routeLine}>
@@ -62,6 +63,7 @@ export default function FlightCard({ flight, cheapestPrice, index = 0, onSetAler
           </div>
           <div className={styles.routePoint}>
             <span className={styles.routeCode}>{flight.destination}</span>
+            <span className={styles.routeCity}>{getAirport(flight.destination)?.city_vi || flight.destination}</span>
             {flight.returnAt && (
               <span className={styles.routeDate}>{formatDate(flight.returnAt)}</span>
             )}

@@ -141,6 +141,29 @@
   font-size: var(--text-base);
 }
 
+.countryGroupItem {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  margin-bottom: var(--space-1);
+}
+
+.countryGroupItem:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.countryGroupBadge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--color-accent-primary);
+  color: white;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
 .submitBtn {
   align-self: flex-end;
   height: 42px;
